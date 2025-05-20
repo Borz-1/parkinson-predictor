@@ -28,7 +28,10 @@ def load_and_preprocess_data(path):
     X_scaled = scaler.fit_transform(X)
 
 
-    # Splitting the data
-    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.3, random_state=SEED)
-    
-    return X_train, X_test, y_train, y_test, scaler
+    # Split test (20%)
+    X_temp, X_test, y_temp, y_test = train_test_split(X_scaled, y, test_size=0.1, random_state=SEED)
+
+    # Split validation
+    X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=0.25, random_state=SEED)
+        
+    return X_train, X_val, X_test, y_train, y_val, y_test, scaler
