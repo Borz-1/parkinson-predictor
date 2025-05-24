@@ -7,6 +7,8 @@ from sklearn.model_selection import KFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, recall_score, roc_auc_score
+from sklearn.utils import resample
+
 
 
 def train_model(X_train, X_val, X_test, y_train, y_val, y_test, input_shape):
@@ -116,3 +118,40 @@ def cross_validate_model(X, y, n_splits, use_pca=True, params={}):
 
 
     return accuracies, recalls, aucs
+
+
+# Bootstrap, variante de la crossvalidation idéale pour peu de données. 
+# Tirage avec remises pour l'entraînement, les données restante pour le test 
+def bootstrap_validate_model(X, y, n_iterations=100, use_pca=True, params={}):
+    scores = []
+    
+    for i in range(n_iterations):
+        
+        # tirage avec remise
+        X_train, y_train = resample(X, y, replace=True, random_state=0)
+        
+        # Données non tirés
+        test_mask = ~np.isin(np.arange(len(X)), X_train)
+        X_test = X[test_mask]
+        y_test = y[test_mask]
+        
+        # Preprocessing
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+
+        if use_pca:
+            pca = PCA(n_components=3)
+            X_train_scaled = pca.fit_transform(X_train_scaled)
+            X_test_scaled = pca.transform(X_test_scaled)
+
+        model, _ = train_simple_model(X_train_scaled, X_test_scaled, y_train, y_test, X_train_scaled.shape[1])
+        y_pred = model.predict(X_test_scaled)
+
+        score = recall_score(y_test, y_pred > 0.5)
+        scores.append(score)
+
+    print(f"Recall moyen bootstrap : {np.mean(scores):.4f} ± {np.std(scores):.4f}")
+    return scores
+    
+    

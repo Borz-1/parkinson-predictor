@@ -16,6 +16,10 @@ activations = ['relu', 'tanh']
 optimizers = ['adam', 'rmsprop']
 batch_sizes = [32, 64]
 
+
+results = []
+
+
 # itertools.product() va créer toutes les combinaisons possibles
 all_combinations = list(itertools.product(
     hidden_layer_options,
@@ -50,6 +54,7 @@ for i, (hl, dr, bn, act, opt, bs) in enumerate(all_combinations):
         "auc": np.mean(aucs)
     })
 
+
 # Trier selon l'AUC ou une autre métrique
 results_sorted = sorted(results, key=lambda x: x["recall"], reverse=True)
 
@@ -63,6 +68,8 @@ for i, res in enumerate(results_sorted[:3], 1):
     
     
     
+df = pd.DataFrame(results)
+df.to_csv("results/search_results.csv", index=False)
     
     
 """
