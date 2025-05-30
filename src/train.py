@@ -8,6 +8,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import accuracy_score, recall_score, roc_auc_score
 from sklearn.utils import resample
+from tensorflow.keras.optimizers import Adam, RMSprop, SGD
+
 
 
 
@@ -51,8 +53,27 @@ def train_simple_model(X_train, X_val, y_train, y_val, input_shape, params=None)
     
     if params is None:
         params = {}
+        
+    # Séparer les paramètres
+    model_params = {k: params[k] for k in ['hidden_layers', 'dropout_rate', 'use_batchnorm', 'activation']}
     
-    model = build_model(input_shape, **params)
+    
+    model = build_model(input_shape, **model_params)
+    
+    optimizers = {
+        'adam': Adam(),
+        'rmsprop': RMSprop(),
+        'sgd': SGD()
+        }
+    
+    optimizer = optimizers.get(params.get('optimizer', 'adam'), Adam())
+
+    
+    model.compile(
+    optimizer=optimizer,
+    loss='binary_crossentropy',
+    metrics=['accuracy', 'Recall']
+    )
     
     # connaître les poids pour le déséquilibre
     classes = np.unique(y_train)
@@ -74,7 +95,6 @@ def train_simple_model(X_train, X_val, y_train, y_val, input_shape, params=None)
     )
     
     return model, history
-
 
 
 def cross_validate_model(X, y, n_splits, use_pca=True, params={}):
@@ -102,7 +122,7 @@ def cross_validate_model(X, y, n_splits, use_pca=True, params={}):
             X_train_scaled = pca.fit_transform(X_train_scaled)
             X_val_scaled = pca.transform(X_val_scaled)
             
-        model, history = train_simple_model(X_train_scaled, X_val_scaled, y_train, y_val, X_train_scaled.shape[1])
+        model, history = train_simple_model(X_train_scaled, X_val_scaled, y_train, y_val, X_train_scaled.shape[1], params)
         
         y_pred = model.predict(X_val_scaled)
     
@@ -145,7 +165,7 @@ def bootstrap_validate_model(X, y, n_iterations=100, use_pca=True, params={}):
             X_train_scaled = pca.fit_transform(X_train_scaled)
             X_test_scaled = pca.transform(X_test_scaled)
 
-        model, _ = train_simple_model(X_train_scaled, X_test_scaled, y_train, y_test, X_train_scaled.shape[1])
+        model, _ = train_simple_model(X_train_scaled, X_test_scaled, y_train, y_test, X_train_scaled.shape[1], params)
         y_pred = model.predict(X_test_scaled)
 
         score = recall_score(y_test, y_pred > 0.5)
