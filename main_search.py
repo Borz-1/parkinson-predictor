@@ -80,23 +80,23 @@ df = pd.DataFrame(results)
 df.to_csv("results/search_results.csv", index=False)
     
     
+
 """
 Top 1
-Params : {'hidden_layers': [64, 32, 16], 'dropout_rate': 0.2, 'use_batchnorm': False, 'activation': 'relu', 'optimizer': 'adam', 'batch_size': 32}
-Accuracy : 0.8359
-Recall :   0.8652
-AUC :      0.8974
+Params : {'hidden_layers': [128], 'dropout_rate': 0.4, 'use_batchnorm': True, 'activation': 'tanh', 'optimizer': 'rmsprop', 'batch_size': 32}
+Accuracy : 0.8000
+Recall :   0.9323
+AUC :      0.6291
 
 Top 2
-Params : {'hidden_layers': [128, 64], 'dropout_rate': 0.4, 'use_batchnorm': True, 'activation': 'relu', 'optimizer': 'rmsprop', 'batch_size': 64}
-Accuracy : 0.8410
-Recall :   0.8548
-AUC :      0.8929
+Params : {'hidden_layers': [128], 'dropout_rate': 0.2, 'use_batchnorm': True, 'activation': 'tanh', 'optimizer': 'rmsprop', 'batch_size': 16}
+Accuracy : 0.8103
+Recall :   0.9103
+AUC :      0.7843
 
 Top 3
-Params : {'hidden_layers': [128, 64], 'dropout_rate': 0.2, 'use_batchnorm': True, 'activation': 'tanh', 'optimizer': 'adam', 'batch_size': 32}
-Accuracy : 0.8308
-Recall :   0.8354
-AUC :      0.9070
-    
+Params : {'hidden_layers': [128], 'dropout_rate': 0.4, 'use_batchnorm': True, 'activation': 'relu', 'optimizer': 'adam', 'batch_size': 16}
+Accuracy : 0.8205
+Recall :   0.8976
+AUC :      0.8098
 """

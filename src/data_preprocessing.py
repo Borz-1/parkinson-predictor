@@ -12,19 +12,19 @@ def load_and_preprocess_data(path, pca=False):
     
     # test du chemin
     if not os.path.exists(path):
-        raise FileNotFoundError(f"Dataset not find at {path}")
+        raise FileNotFoundError(f"Dataset pas trouvé à l'adresse : {path}")
     
     # importer le dataset
     df = pd.read_csv(path)
     
-    print(f"Dataset loaded: {df.shape[0]} rows, {df.shape[1]} columns")
+    print(f"Dataset chargé: {df.shape[0]} lignes, {df.shape[1]} colonnes")
     
     # Split en X et y sans garder status et name
     X = df.drop(columns=["status", "name"])
     y = df["status"]
 
     # Split test (10%)
-    X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=0.1, random_state=SEED)
+    X_temp, X_test, y_temp, y_test = train_test_split(X, y, test_size=0.15, random_state=SEED)
 
     # Split validation
     X_train, X_val, y_train, y_val = train_test_split(X_temp, y_temp, test_size=0.25, random_state=SEED)
